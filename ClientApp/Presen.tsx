@@ -8,7 +8,7 @@ return (
     <div className="h1">Integrantes</div>
     <div className="h2">Nombre del integrante 1</div>
     <div className="h2">Nombre del integrante 2</div>
-      <div className="h1">Nombre del Proyecto</div>
+      <div className="h1">Nombre del Proyecto</div> 
     </>
 )
 }
