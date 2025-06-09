@@ -1,4 +1,4 @@
-const Presentacion = () => {
+const Presen = () => {
 // Manejo de datos
 
 //Vista
@@ -13,4 +13,4 @@ return (
 )
 }
 
-export default Presentacion;
+export default Presen;
