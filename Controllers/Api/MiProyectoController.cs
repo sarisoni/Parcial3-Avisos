@@ -18,15 +18,15 @@ public class MiProyectoController : ControllerBase
     }
 
     [HttpGet("presentacion")]
-    public IActionResult Presentacion(){
-        MongoClient client=new
-        MongoClient(CadenaConexion.MONGO_DB);
-        var db=
-        client.GetDatabase("Escuela_Sari_Jose");
-        var collection=
-        db.GetCollection<Equipo>("Equipo");
+    public IActionResult Presentacion()
+    {
+        
+        var client = new MongoClient(CadenaConexion.MONGO_DB);
+        var database= client.GetDatabase("Escuela_Sari_Jose");
+        var collection=database.GetCollection<Equipo>("Equipo");
 
-        var list=collection.Find(FilterDefinition<Equipo>.Empty).ToList();
-        return Ok(list);
+        var filter = FilterDefinition<Equipo>.Empty;
+        var item = collection.Find(filter).FirstOrDefault();
+        return Ok(item);
     }
 }
