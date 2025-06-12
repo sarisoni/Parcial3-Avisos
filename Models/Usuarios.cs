@@ -9,7 +9,7 @@ public class Usuarios
     public string Nombre { get; set; } = string.Empty;
 
     [BsonElement("password")]
-    public string password { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
     [BsonElement("correo")]
     public string Correo { get; set; } = string.Empty;
