@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -45,5 +46,64 @@ public class ApiUsuariosController : ControllerBase
             this.collection.DeleteOne(filter);
         }
         return NoContent();
+    }
+
+    [HttpPut]
+    public IActionResult Update(UsuarioRequest model)
+    {
+
+        // 1. Validar el modelo para que contenga datos
+        if (string.IsNullOrWhiteSpace(model.Correo))
+        {
+            return BadRequest("El correo es requerido");
+        }
+        if (string.IsNullOrWhiteSpace(model.Password))
+        {
+            return BadRequest("El Password requerido");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Nombre))
+        {
+            return BadRequest("El nombre es requerido");
+        }
+
+        // Validar que el correo no exista 
+        var filter = Builders<Usuarios>.Filter.Eq(x => x.Correo, model.Correo);
+        var item = this.collection.Find(filter).FirstOrDefault();
+        if (item != null)
+        {
+            return BadRequest("El correo " + model.Correo + " ya existe en la base de datos");
+        }
+
+        Usuarios bd = new Usuarios();
+        bd.Nombre = model.Nombre;
+        bd.Correo = model.Correo;
+        bd.Password = model.Password;
+
+        this.collection.InsertOne(bd);
+
+        return Ok();
+    }
+    public IActionResult Update(string id, UsuarioRequest model)
+    {
+        // Validar que el correo no exista
+        var filterCorreo = Builders<Usuarios>.Filter.Eq(x => x.Correo, model.Correo);
+        var itemExistente = this.collection.Find(filterCorreo).FirstOrDefault();
+
+        if (itemExistente != null && itemExistente.Id != id)
+        {
+            return BadRequest("El correo " + model.Correo + " ya existe en la base de datos");
+        }
+
+        var filter = Builders<Usuarios>.Filter.Eq(x => x.Id, id);
+
+        var updateOptions = Builders<Usuarios>.Update
+            .Set(x => x.Correo, model.Correo)
+            .Set(x => x.Nombre, model.Nombre)
+            .Set(x => x.Password, model.Password);
+
+        this.collection.UpdateOne(filter, updateOptions);
+
+        return Ok();
     }
 }
