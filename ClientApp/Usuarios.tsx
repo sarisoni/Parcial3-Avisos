@@ -79,9 +79,12 @@ const Usuarios = () => {
                 </div>
            </div>
         </div>
-        <div className="container">
+        <div className="container mt-4">
              <div className="card">
-                <div className="card-header">Usuarios existentes </div>
+                <div className="card-header d-flex justify-content-space-between justify-items-center">
+                    Usuarios existentes 
+                    <a href="/usuarios/editar" className="btn btn-primary">Nuevo</a>
+                    </div>
                 <div className="card-body">
                     <table className="table table-striped">
                         <thead>
@@ -112,7 +115,7 @@ const Usuarios = () => {
                                     <td>{item.Correo}</td>
                                     <td>{item.Password}</td>
                                     <td className="d-flex gap-2">
-                                        <a className="btn btn-primary" href={"/usuarios/" + item.Id}>Editar</a>
+                                        <a className="btn btn-primary" href={"/usuarios/editar/" + item.Id}>Editar</a>
                                         <button className="btn btn-danger" onClick={()=> eliminar(item)}>Eliminar</button>
                                     </td>
                                    </tr>

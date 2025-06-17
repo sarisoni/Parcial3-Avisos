@@ -29,37 +29,39 @@ public class ApiUsuariosController : ControllerBase
         {
             var filterNombre = Builders<Usuarios>.Filter.Regex(u => u.Nombre, new BsonRegularExpression(texto, "i"));
             var filterCorreo = Builders<Usuarios>.Filter.Regex(u => u.Correo, new BsonRegularExpression(texto, "i"));
-            filter = Builders<Usuarios>.Filter.Or(filterNombre, filterCorreo);
-
+            filter = Builders<Usuarios>.Filter.Or(filterNombre,filterCorreo);
         }
-        var list = this.collection.Find(filter).ToList();
 
+        var list = this.collection.Find(filter).ToList();
+        
         return Ok(list);
     }
+
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
     {
         var filter = Builders<Usuarios>.Filter.Eq(x => x.Id, id);
         var item = this.collection.Find(filter).FirstOrDefault();
-        if (item != null)
+        if(item != null)
         {
             this.collection.DeleteOne(filter);
         }
         return NoContent();
     }
 
-    [HttpPut]
-    public IActionResult Update(UsuarioRequest model)
-    {
+    [HttpPost]
 
-        // 1. Validar el modelo para que contenga datos
+    public IActionResult Create(UsuarioRequest model)
+    {
+        // 1. Validar el modelo paea que contenga datos
         if (string.IsNullOrWhiteSpace(model.Correo))
         {
             return BadRequest("El correo es requerido");
         }
+
         if (string.IsNullOrWhiteSpace(model.Password))
         {
-            return BadRequest("El Password requerido");
+            return BadRequest("El password es requerido");
         }
 
         if (string.IsNullOrWhiteSpace(model.Nombre))
@@ -67,12 +69,12 @@ public class ApiUsuariosController : ControllerBase
             return BadRequest("El nombre es requerido");
         }
 
-        // Validar que el correo no exista 
+        //Validar que el correo no exista
         var filter = Builders<Usuarios>.Filter.Eq(x => x.Correo, model.Correo);
         var item = this.collection.Find(filter).FirstOrDefault();
         if (item != null)
         {
-            return BadRequest("El correo " + model.Correo + " ya existe en la base de datos");
+            return BadRequest("El correo" + model.Correo + "ya existe en la base de datos");
         }
 
         Usuarios bd = new Usuarios();
@@ -84,18 +86,53 @@ public class ApiUsuariosController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("{id}")]
+    public IActionResult Read(string id)
+    {
+        var filter = Builders<Usuarios>.Filter.Eq(x => x.Id, id);
+        var item = this.collection.Find(filter).FirstOrDefault();
+        if(item != null)
+        {
+            return NotFound("No existe un usuario con el ID proporcionado");
+        }
+        return Ok(item);
+    }
+
+    [HttpPut("{id}")]
+
     public IActionResult Update(string id, UsuarioRequest model)
     {
-        // Validar que el correo no exista
-        var filterCorreo = Builders<Usuarios>.Filter.Eq(x => x.Correo, model.Correo);
-        var itemExistente = this.collection.Find(filterCorreo).FirstOrDefault();
-
-        if (itemExistente != null && itemExistente.Id != id)
+        // 1. Validar el modelo paea que contenga datos
+        if (string.IsNullOrWhiteSpace(model.Correo))
         {
-            return BadRequest("El correo " + model.Correo + " ya existe en la base de datos");
+            return BadRequest("El correo es requerido");
         }
 
+        if (string.IsNullOrWhiteSpace(model.Password))
+        {
+            return BadRequest("El password es requerido");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Nombre))
+        {
+            return BadRequest("El nombre es requerido");
+        }
+        
         var filter = Builders<Usuarios>.Filter.Eq(x => x.Id, id);
+        var item = this.collection.Find(filter).FirstOrDefault();
+        if (item == null)
+        {
+            return NotFound("No dxiste un ussuario con el ID proporcionado");
+        }
+
+        //Validar que el correo no exista
+        var filterCorreo = Builders<Usuarios>.Filter.Eq(x => x.Correo, model.Correo);
+        var itemExistente = this.collection.Find(filter).FirstOrDefault();
+        if (itemExistente != null && itemExistente != null)
+        {
+            return BadRequest("El correo" + model.Correo + "ya existe en la base de datos");
+        }
 
         var updateOptions = Builders<Usuarios>.Update
             .Set(x => x.Correo, model.Correo)
